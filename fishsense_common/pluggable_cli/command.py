@@ -4,9 +4,13 @@ Base class for cli commands which allows for adding additional arguments to the 
 
 from abc import abstractmethod
 from logging import Logger
+from pathlib import Path
 
+import ray
 import yaml
+from appdirs import user_config_dir
 
+from fishsense_common import __version__
 from fishsense_common.pluggable_cli.arguments import ARGUMENTS
 
 
@@ -33,6 +37,10 @@ class Command:
     def logger(self, value: Logger):
         self.__logger = value
 
+    @property
+    def allow_config(self) -> bool:
+        return True
+
     def __init__(self) -> None:
         self.__logger: Logger = None
 
@@ -46,7 +54,20 @@ class Command:
 
         config = {self.name: {"args": args}}
         with open(save_config, "w") as f:
-            yaml.dump(config, f)
+            yaml.safe_dump(config, f)
+
+    def init_ray(self):
+        ray_config_path = (
+            Path(user_config_dir("RayCli", "Engineers for Exploration", __version__))
+            / "ray.yaml"
+        )
+
+        ray_config = {}
+        if ray_config_path.exists():
+            with ray_config_path.open("r") as f:
+                ray_config = yaml.safe_load(f)
+
+        ray.init(**ray_config)
 
     @abstractmethod
     def __call__(self):

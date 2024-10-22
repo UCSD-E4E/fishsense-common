@@ -2,8 +2,8 @@ import inspect
 import logging
 import os.path
 import sys
-from argparse import ArgumentParser
-from typing import Dict
+from argparse import ArgumentParser, _SubParsersAction
+from typing import Dict, Tuple
 
 import yaml
 from wakepy import keep
@@ -44,6 +44,8 @@ class Cli:
         subparsers.required = True
 
         for name, command in self.__commands.items():
+            command.logger = self.__logger
+
             subparser = subparsers.add_parser(name, description=command.description)
             subparser.set_defaults(run_command=command)
 
@@ -69,7 +71,8 @@ class Cli:
                 }
 
                 if (
-                    name in config
+                    command.allow_config
+                    and name in config
                     and "args" in config[name]
                     and argument.dest in config[name]["args"]
                 ):
@@ -89,27 +92,27 @@ class Cli:
 
                 subparser.add_argument(*args, **kwargs)
 
-            subparser.add_argument(
-                "--config",
-                dest="config",
-                type=str,
-                required=False,
-                default=None,
-                help="A yaml configuration file which can be overrode by the command line arguments.",
-            )
+            if command.allow_config:
+                subparser.add_argument(
+                    "--config",
+                    dest="config",
+                    type=str,
+                    required=False,
+                    default=None,
+                    help="A yaml configuration file which can be overrode by the command line arguments.",
+                )
 
-            subparser.add_argument(
-                "--save-config",
-                dest="save_config",
-                type=str,
-                required=False,
-                default=None,
-                help="A path to save a yaml file with the current configuration of the command line arguments.",
-            )
+                subparser.add_argument(
+                    "--save-config",
+                    dest="save_config",
+                    type=str,
+                    required=False,
+                    default=None,
+                    help="A path to save a yaml file with the current configuration of the command line arguments.",
+                )
 
         args = parser.parse_args()
         command: Command = args.run_command
-        command.logger = self.__logger
 
         for member in inspect.getmembers(command):
             if member[0].startswith("_"):
@@ -123,7 +126,7 @@ class Cli:
 
             setattr(command, member[0], getattr(args, argument.dest))
 
-        if args.save_config:
+        if hasattr(args, "save_config") and args.save_config:
             command.save_config(args.save_config)
 
             return None

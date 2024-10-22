@@ -18,7 +18,7 @@
             "program": "test_package/test_cli.py",
             "console": "integratedTerminal",
             "args": [
-                "test-command",
+                "generate-ray-config",
                 "--help"
             ]
         },
@@ -32,6 +32,16 @@
                 "test-command",
                 "--test-argument",
                 "This is the result"
+            ]
+        },
+        {
+            "name": "Python Debugger: test_package/test_cli.py generate-ray-config",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "test_package/test_cli.py",
+            "console": "integratedTerminal",
+            "args": [
+                "generate-ray-config",
             ]
         }
     ]
