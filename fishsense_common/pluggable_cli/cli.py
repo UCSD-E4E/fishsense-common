@@ -41,17 +41,27 @@ class Cli:
 
                 argument = ARGUMENTS[full_name]
 
-                args = [i for i in [argument.short_name, argument.long_name] if i]
-                kwargs = {
-                    "nargs": argument.nargs,
-                    "dest": argument.dest,
-                    "type": argument.type,
-                    "required": argument.required,
-                    "action": "store_true" if argument.flag else "store",
-                    "help": argument.help,
-                }
-
-                subparser.add_argument(*args, **kwargs)
+                if argument.short_name:
+                    subparser.add_argument(
+                        argument.short_name,
+                        argument.long_name,
+                        nargs=argument.nargs,
+                        dest=argument.dest,
+                        type=argument.type,
+                        required=argument.required,
+                        action="store_true" if argument.flag else "store",
+                        help=argument.help,
+                    )
+                else:
+                    subparser.add_argument(
+                        argument.long_name,
+                        nargs=argument.nargs,
+                        dest=argument.dest,
+                        type=argument.type,
+                        required=argument.required,
+                        action="store_true" if argument.flag else "store",
+                        help=argument.help,
+                    )
 
         args = parser.parse_args()
         command: Command = args.run_command
