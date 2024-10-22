@@ -12,6 +12,7 @@ class Argument:
         type: Any,
         required: bool,
         flag: bool,
+        default: Any,
         help: str,
     ) -> None:
         self.short_name = short_name
@@ -21,6 +22,7 @@ class Argument:
         self.type = type
         self.required = required
         self.flag = flag
+        self.default = default
         self.help = help
 
 
@@ -33,6 +35,7 @@ def argument(
     nargs: str = None,
     required=False,
     flag=False,
+    default=None,
     help: str = None,
 ) -> Callable:
     def wrapper(func: Callable):
@@ -54,6 +57,7 @@ def argument(
             argument_type,
             required,
             flag,
+            default,
             help,
         )
 

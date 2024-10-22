@@ -1,8 +1,11 @@
 import inspect
 import logging
+import os.path
+import sys
 from argparse import ArgumentParser
-from typing import Any, Dict
+from typing import Dict
 
+import yaml
 from wakepy import keep
 
 from fishsense_common.pluggable_cli.arguments import ARGUMENTS
@@ -23,6 +26,24 @@ class Cli:
         self._description = description
 
     def __parse(self) -> Command:
+        argv = sys.argv
+
+        config = {}
+        if "--confg" in argv:
+            config_index = argv.index("--config")
+            value = argv[config_index + 1]
+
+            argv.remove("--config")
+            argv.remove(value)
+
+            if os.path.exists(value):
+                with open(value, "r") as f:
+                    config = yaml.load(f)
+            else:
+                self._logger.warning(
+                    f'"{value}" does not exist.  Skipping loading config.'
+                )
+
         parser = ArgumentParser(prog=self._name, description=self._description)
         subparsers = parser.add_subparsers(dest="command")
         subparsers.required = True
@@ -48,8 +69,17 @@ class Cli:
                     "type": argument.type,
                     "required": argument.required,
                     "action": "store_true" if argument.flag else "store",
+                    "default": argument.default,
                     "help": argument.help,
                 }
+
+                if (
+                    name in config
+                    and "args" in config[name]
+                    and argument.dest in config[name]["args"]
+                ):
+                    kwargs["required"] = False
+                    kwargs["default"] = config[name]["args"][argument.dest]
 
                 if argument.nargs:
                     del kwargs["dest"]
@@ -61,7 +91,7 @@ class Cli:
 
                 subparser.add_argument(*args, **kwargs)
 
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
         command: Command = args.run_command
 
         for member in inspect.getmembers(command):
