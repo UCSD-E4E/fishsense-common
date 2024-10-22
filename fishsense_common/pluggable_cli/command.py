@@ -44,7 +44,7 @@ class Command:
             if k.startswith(class_name)
         }
 
-        config = {"command": {"args": args}}
+        config = {self.name: {"args": args}}
         with open(save_config, "w") as f:
             yaml.dump(config, f)
 
