@@ -33,7 +33,7 @@ class Cli:
 
             if os.path.exists(value):
                 with open(value, "r") as f:
-                    config = yaml.load(f)
+                    config = yaml.safe_load(f)
             else:
                 self.__logger.warning(
                     f'"{value}" does not exist.  Skipping loading config.'
