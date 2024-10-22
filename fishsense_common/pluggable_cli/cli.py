@@ -22,7 +22,7 @@ class Cli:
         self._name = name
         self._description = description
 
-    def __parse(self) -> Any:
+    def __parse(self) -> Command:
         parser = ArgumentParser(prog=self._name, description=self._description)
         subparsers = parser.add_subparsers(dest="command")
         subparsers.required = True
@@ -52,13 +52,28 @@ class Cli:
                     help=argument.help,
                 )
 
-        return parser.parse_args()
+        args = parser.parse_args()
+        command: Command = args.run_command
+
+        for member in inspect.getmembers(command):
+            if member[0].startswith("_"):
+                continue
+
+            full_name = f"{command.__class__.__module__}.{command.__class__.__qualname__}.{member[0]}"
+            if full_name not in ARGUMENTS.keys():
+                continue
+
+            argument = ARGUMENTS[full_name]
+
+            setattr(command, member[0], getattr(args, argument.dest))
+
+        return command
 
     def add(self, command: Command) -> None:
         self._commands[command.name] = command
 
     def __call__(self):
-        args = self.__parse()
+        command = self.__parse()
 
         sleep_hold_set = False
         if self._keep_awake:
@@ -71,7 +86,7 @@ class Cli:
                     "Exception occurred while trying to get a sleep hold.  Computer may sleep."
                 )
 
-        args.run_command(args)
+        command()
 
         if sleep_hold_set:
             sleep_hold.__exit__(None, None, None)

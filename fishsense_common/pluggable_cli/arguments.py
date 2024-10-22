@@ -1,5 +1,5 @@
 from inspect import signature
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, get_args
 
 
 class Argument:
@@ -37,13 +37,21 @@ def argument(
 ) -> Callable:
     def wrapper(func: Callable):
         full_name = f"{func.__module__}.{func.__qualname__}"
+        argument_type = signature(func).return_annotation
+
+        _nargs = nargs
+        if argument_type.__name__ == "List":
+            if _nargs is None:
+                _nargs = "+" if required else "*"
+
+            argument_type = get_args(argument_type)[0]
 
         ARGUMENTS[full_name] = Argument(
             long_name,
             short_name,
-            nargs,
+            _nargs,
             func.__name__,
-            signature(func).return_annotation,
+            argument_type,
             required,
             flag,
             help,

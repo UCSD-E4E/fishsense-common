@@ -26,7 +26,7 @@ class Command:
     #     self.logger = logger
 
     @abstractmethod
-    def __call__(self, args: Namespace):
+    def __call__(self):
         """
         In a child class, this method is executed by a CLI plugin.
         """

@@ -21,6 +21,18 @@
                 "test-command",
                 "--help"
             ]
+        },
+        {
+            "name": "Python Debugger: test_package/test_cli.py test-command",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "test_package/test_cli.py",
+            "console": "integratedTerminal",
+            "args": [
+                "test-command",
+                "--test-argument",
+                "This is the result"
+            ]
         }
     ]
 }
