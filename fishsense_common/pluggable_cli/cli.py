@@ -121,7 +121,7 @@ class Cli:
             setattr(command, member[0], getattr(args, argument.dest))
 
         if args.save_config:
-            command.__save_config(args.save_config)
+            command.save_config(args.save_config)
 
             return None
         else:

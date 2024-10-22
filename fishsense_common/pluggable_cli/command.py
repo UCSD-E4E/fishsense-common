@@ -36,7 +36,7 @@ class Command:
     def __init__(self) -> None:
         self.__logger: Logger = None
 
-    def __save_config(self, save_config: str):
+    def save_config(self, save_config: str):
         class_name = f"{self.__class__.__module__}.{self.__class__.__qualname__}"
         args = {k: v for k, v in ARGUMENTS.items() if k.startswith(class_name)}
 
