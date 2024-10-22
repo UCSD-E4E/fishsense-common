@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "fishsense_common"
+version = "0.1.0"
+description = ""
+authors = ["Christopher L. Crutchfield <ccrutchf@ucsd.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+wakepy = "^0.10.1"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.26.0"
+black = "^24.3.0"
+pylint = "^3.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
