@@ -40,7 +40,7 @@ class Command:
         class_name = f"{self.__class__.__module__}.{self.__class__.__qualname__}"
         args = {k: v for k, v in ARGUMENTS.items() if k.startswith(class_name)}
 
-        config = {"command": self.name, "args": args}
+        config = {"command": {"args": args}}
         with open(save_config, "w") as f:
             yaml.dump(config, f)
 
