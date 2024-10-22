@@ -27,7 +27,7 @@ class Cli:
 
     def __parse(self) -> Command:
         config = {}
-        if "--confg" in sys.argv:
+        if "--config" in sys.argv:
             config_index = sys.argv.index("--config")
             value = sys.argv[config_index + 1]
 
