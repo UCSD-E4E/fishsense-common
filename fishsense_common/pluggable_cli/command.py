@@ -3,8 +3,11 @@ Base class for cli commands which allows for adding additional arguments to the 
 """
 
 from abc import abstractmethod
-from argparse import ArgumentParser, Namespace
 from logging import Logger
+
+import yaml
+
+from fishsense_common.pluggable_cli.arguments import ARGUMENTS
 
 
 class Command:
@@ -22,8 +25,24 @@ class Command:
     def description(self) -> str:
         raise NotImplementedError
 
-    # def __init__(self, parser: ArgumentParser, logger: Logger):
-    #     self.logger = logger
+    @property
+    def logger(self) -> Logger:
+        return self.__logger
+
+    @logger.setter
+    def logger(self, value: Logger):
+        self.__logger = value
+
+    def __init__(self) -> None:
+        self.__logger: Logger = None
+
+    def __save_config(self, save_config: str):
+        class_name = f"{self.__class__.__module__}.{self.__class__.__qualname__}"
+        args = {k: v for k, v in ARGUMENTS.items() if k.startswith(class_name)}
+
+        config = {"command": self.name, "args": args}
+        with open(save_config, "w") as f:
+            yaml.dump(config, f)
 
     @abstractmethod
     def __call__(self):
