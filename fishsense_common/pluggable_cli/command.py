@@ -38,7 +38,11 @@ class Command:
 
     def save_config(self, save_config: str):
         class_name = f"{self.__class__.__module__}.{self.__class__.__qualname__}"
-        args = {k: v for k, v in ARGUMENTS.items() if k.startswith(class_name)}
+        args = {
+            v.dest: getattr(self, v.dest)
+            for k, v in ARGUMENTS.items()
+            if k.startswith(class_name)
+        }
 
         config = {"command": {"args": args}}
         with open(save_config, "w") as f:
