@@ -26,15 +26,10 @@ class Cli:
         self._description = description
 
     def __parse(self) -> Command:
-        argv = sys.argv
-
         config = {}
-        if "--confg" in argv:
-            config_index = argv.index("--config")
-            value = argv[config_index + 1]
-
-            argv.remove("--config")
-            argv.remove(value)
+        if "--confg" in sys.argv:
+            config_index = sys.argv.index("--config")
+            value = sys.argv[config_index + 1]
 
             if os.path.exists(value):
                 with open(value, "r") as f:
@@ -91,7 +86,16 @@ class Cli:
 
                 subparser.add_argument(*args, **kwargs)
 
-        args = parser.parse_args(argv[1:])
+            subparser.add_argument(
+                "--config",
+                dest="config",
+                type=str,
+                required=False,
+                default=None,
+                help="A yaml configuration file which can be overrode by the command line arguments.",
+            )
+
+        args = parser.parse_args()
         command: Command = args.run_command
 
         for member in inspect.getmembers(command):
