@@ -55,6 +55,9 @@ class Cli:
                     del kwargs["dest"]
                     del kwargs["required"]
 
+                if argument.flag:
+                    del kwargs["nargs"]
+
                 subparser.add_argument(*args, **kwargs)
 
         args = parser.parse_args()
