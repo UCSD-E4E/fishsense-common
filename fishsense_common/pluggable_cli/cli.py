@@ -41,7 +41,7 @@ class Cli:
 
                 argument = ARGUMENTS[full_name]
 
-                args = [argument.short_name, argument.long_name]
+                args = [i for i in [argument.short_name, argument.long_name] if i]
                 kwargs = {
                     "nargs": argument.nargs,
                     "dest": argument.dest,
