@@ -57,6 +57,7 @@ class Cli:
 
                 if argument.flag:
                     del kwargs["nargs"]
+                    del kwargs["type"]
 
                 subparser.add_argument(*args, **kwargs)
 
