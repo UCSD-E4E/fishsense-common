@@ -76,6 +76,9 @@ class Cli:
                     kwargs["required"] = False
                     kwargs["default"] = config[name]["args"][argument.dest]
 
+                    if kwargs["nargs"] == "+":
+                        kwargs["nargs"] = "*"
+
                 if argument.nargs:
                     del kwargs["dest"]
                     del kwargs["required"]
