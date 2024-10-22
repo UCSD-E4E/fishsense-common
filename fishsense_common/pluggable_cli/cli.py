@@ -91,7 +91,7 @@ class Cli:
 
                 subparser.add_argument(*args, **kwargs)
 
-        args = parser.parse_args(argv)
+        args = parser.parse_args(argv[1:])
         command: Command = args.run_command
 
         for member in inspect.getmembers(command):
