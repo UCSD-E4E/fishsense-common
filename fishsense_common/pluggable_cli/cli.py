@@ -26,11 +26,17 @@ class Cli:
         self.__description = description
 
     def __parse(self) -> Command:
-        config = {}
+        value = None
         if "--config" in sys.argv:
             config_index = sys.argv.index("--config")
             value = sys.argv[config_index + 1]
+        elif any(True for v in sys.argv if v.startswith("--config=")):
+            value = [v.replace("--config=") for v in sys.argv.startswith("--config=")][
+                0
+            ]
 
+        config = {}
+        if value is not None:
             if os.path.exists(value):
                 with open(value, "r") as f:
                     config = yaml.safe_load(f)
@@ -75,6 +81,7 @@ class Cli:
                     and name in config
                     and "args" in config[name]
                     and argument.dest in config[name]["args"]
+                    and config[name]["args"][argument.dest] is not None
                 ):
                     kwargs["required"] = False
                     kwargs["default"] = config[name]["args"][argument.dest]
