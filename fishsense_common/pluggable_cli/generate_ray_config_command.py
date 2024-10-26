@@ -46,8 +46,8 @@ class GenerateRayConfigCommand(Command):
         self.__max_num_gpu: int = None
 
     def __call__(self):
-        max_num_cpu = max(cpu_count(), self.__max_num_cpu or 0)
-        max_num_gpu = max(
+        max_num_cpu = min(cpu_count(), self.__max_num_cpu or 0)
+        max_num_gpu = min(
             torch.cuda.device_count() if torch.cuda.is_available() else 1000,
             self.__max_num_gpu or 0,
         )
