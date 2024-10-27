@@ -6,11 +6,13 @@ from abc import abstractmethod
 from logging import Logger
 from multiprocessing import cpu_count
 from pathlib import Path
+from typing import Any, Iterable, Tuple
 
 import ray
 import torch
 import yaml
 from appdirs import user_config_dir
+from tqdm import tqdm
 
 from fishsense_common import __version__
 from fishsense_common.pluggable_cli.arguments import ARGUMENTS, argument
@@ -66,6 +68,11 @@ class Command:
         self.__max_num_cpu: int = None
         self.__max_num_gpu: int = None
 
+    def __to_iterator(self, futures: Iterable[ray.ObjectRef]) -> Iterable[Any]:
+        while futures:
+            done, futures = ray.wait(futures)
+            yield ray.get(done[0])
+
     def save_config(self, save_config: str):
         class_name = f"{self.__class__.__module__}.{self.__class__.__qualname__}"
         args = {
@@ -78,7 +85,7 @@ class Command:
         with open(save_config, "w") as f:
             yaml.safe_dump(config, f)
 
-    def init_ray(self):
+    def init_ray(self) -> Tuple[int, int]:
         ray_config_path = (
             Path(user_config_dir("RayCli", "Engineers for Exploration", __version__))
             / "ray.yaml"
@@ -100,6 +107,13 @@ class Command:
             )
 
         ray.init(**ray_config)
+
+        return ray_config["num_cpus"], (
+            ray_config["num_gpus"] if "num_gpus" in ray_config else None
+        )
+
+    def tqdm(self, futures: Iterable[ray.ObjectRef], **kwargs) -> Iterable[Any]:
+        tqdm(self.__to_iterator(futures), **kwargs)
 
     @abstractmethod
     def __call__(self):
