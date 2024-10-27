@@ -113,7 +113,7 @@ class Command:
         )
 
     def tqdm(self, futures: Iterable[ray.ObjectRef], **kwargs) -> Iterable[Any]:
-        tqdm(self.__to_iterator(futures), **kwargs)
+        return tqdm(self.__to_iterator(futures), **kwargs)
 
     @abstractmethod
     def __call__(self):
