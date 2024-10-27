@@ -2,14 +2,17 @@ import inspect
 import logging
 import os.path
 import sys
-from argparse import ArgumentParser, _SubParsersAction
-from typing import Dict, Tuple
+from argparse import ArgumentParser
+from typing import Dict
 
 import yaml
 from wakepy import keep
 
-from fishsense_common.pluggable_cli.arguments import ARGUMENTS
+from fishsense_common.pluggable_cli.arguments import ARGUMENTS, Argument
 from fishsense_common.pluggable_cli.command import Command
+from fishsense_common.pluggable_cli.generate_ray_config_command import (
+    GenerateRayConfigCommand,
+)
 
 
 class Cli:
@@ -24,6 +27,29 @@ class Cli:
         self.__commands: Dict[str, Command] = {}
         self.__name = name
         self.__description = description
+
+        self.add(GenerateRayConfigCommand())
+
+    def __get_argument(self, class_object: type, member: str) -> Argument:
+        full_name = f"{class_object.__module__}.{class_object.__qualname__}.{member}"
+        if full_name in ARGUMENTS.keys():
+            return ARGUMENTS[full_name]
+
+        bases = [b for b in class_object.__mro__ if b != class_object]
+        # If we only have object as a super.
+        if len(bases) <= 1:
+            return None
+
+        # Recursively look at the supers for arguments.
+        arguments = [self.__get_argument(b, member) for b in bases]
+        arguments = [a for a in arguments if a is not None]
+
+        # If we have at least 1, let's grab the first one.
+        if len(arguments) > 0:
+            return arguments[0]
+
+        # If we don't have any, return
+        return None
 
     def __parse(self) -> Command:
         value = None
@@ -59,11 +85,9 @@ class Cli:
                 if member[0].startswith("_"):
                     continue
 
-                full_name = f"{command.__class__.__module__}.{command.__class__.__qualname__}.{member[0]}"
-                if full_name not in ARGUMENTS.keys():
+                argument = self.__get_argument(command.__class__, member[0])
+                if argument is None:
                     continue
-
-                argument = ARGUMENTS[full_name]
 
                 args = [i for i in [argument.short_name, argument.long_name] if i]
                 kwargs = {

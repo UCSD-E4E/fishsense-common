@@ -23,28 +23,6 @@ class GenerateRayConfigCommand(Command):
     def description(self):
         return "Generates a Ray config that can be used to customize the consumption of Ray commands."
 
-    @property
-    @argument("--max-cpu", help="Sets the maximum number of CPU cores allowed.")
-    def max_num_cpu(self) -> int:
-        return self.__max_num_cpu
-
-    @max_num_cpu.setter
-    def max_num_cpu(self, value: int):
-        self.__max_num_cpu = value
-
-    @property
-    @argument("--max-gpu", help="Sets the maximum number of GPU kernels allowed.")
-    def max_num_gpu(self) -> int:
-        return self.__max_num_gpu
-
-    @max_num_gpu.setter
-    def max_num_gpu(self, value: int):
-        self.__max_num_gpu = value
-
-    def __init__(self):
-        self.__max_num_cpu: int = None
-        self.__max_num_gpu: int = None
-
     def __call__(self):
         max_num_cpu = min(cpu_count(), self.__max_num_cpu or 0)
         max_num_gpu = min(
