@@ -24,10 +24,10 @@ class GenerateRayConfigCommand(Command):
         return "Generates a Ray config that can be used to customize the consumption of Ray commands."
 
     def __call__(self):
-        max_num_cpu = min(cpu_count(), self.__max_num_cpu or 0)
+        max_num_cpu = min(cpu_count(), self.max_num_cpu or 0)
         max_num_gpu = min(
             torch.cuda.device_count() if torch.cuda.is_available() else 1000,
-            self.__max_num_gpu or 0,
+            self.max_num_gpu or 0,
         )
 
         if max_num_gpu == 0 or max_num_gpu == 1000:
