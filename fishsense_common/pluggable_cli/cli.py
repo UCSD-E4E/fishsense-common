@@ -149,11 +149,9 @@ class Cli:
             if member[0].startswith("_"):
                 continue
 
-            full_name = f"{command.__class__.__module__}.{command.__class__.__qualname__}.{member[0]}"
-            if full_name not in ARGUMENTS.keys():
+            argument = self.__get_argument(command.__class__, member[0])
+            if argument is None:
                 continue
-
-            argument = ARGUMENTS[full_name]
 
             setattr(command, member[0], getattr(args, argument.dest))
 
