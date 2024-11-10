@@ -5,6 +5,9 @@ import torch
 
 
 def remote(vram_mb: int):
+    if not torch.cuda.is_available():
+        return ray.execute
+
     available_vram_mb = (
         float(torch.cuda.get_device_properties(0).total_memory) / 1024**2
     )
