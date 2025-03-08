@@ -29,7 +29,6 @@ def argument(
     name: str,
     nargs: str = None,
     required=False,
-    flag=False,
     default=None,
     help: str = None,
 ) -> Callable:
@@ -50,7 +49,6 @@ def argument(
             func.__name__,
             argument_type,
             required,
-            flag,
             default,
             help,
         )
