@@ -6,8 +6,8 @@ from fishsense_common.scheduling.arguments import Argument
 
 
 class ArgumentParser(ABC):
-    @abstractmethod
     @property
+    @abstractmethod
     def priority(self) -> float:
         raise NotImplementedError
 
