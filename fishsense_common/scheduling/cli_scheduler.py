@@ -1,4 +1,4 @@
-from argparse import ArgumentParser, _SubParsersAction
+from argparse import ArgumentParser
 from pathlib import Path
 from typing import Any, List
 
@@ -20,8 +20,10 @@ class CliScheduler(Scheduler):
 
         self.__register_run_job_command(subparsers)
 
-    def __register_run_job_command(self, subparsers: _SubParsersAction[ArgumentParser]):
-        subparser = subparsers.add_parser("run-job", description="Runs job file.")
+    def __register_run_job_command(self, subparsers: Any):
+        subparser: ArgumentParser = subparsers.add_parser(
+            "run-job", description="Runs job file."
+        )
         subparser.set_defaults(run_command=self.__run_job_command)
 
         subparser.add_argument(
