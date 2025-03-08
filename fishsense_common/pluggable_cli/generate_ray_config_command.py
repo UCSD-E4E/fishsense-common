@@ -3,10 +3,9 @@ from pathlib import Path
 
 import torch
 import yaml
-from appdirs import user_config_dir
+from platformdirs import user_config_dir
 
 from fishsense_common import __version__
-from fishsense_common.pluggable_cli.arguments import argument
 from fishsense_common.pluggable_cli.command import Command
 
 
