@@ -32,7 +32,7 @@ class __GenericArgumentParser(ArgumentParser):
         return argument.type(value)
 
 
-__ARGUMENT_PARSERS: Set[ArgumentParser] = {}
+__ARGUMENT_PARSERS: Set[ArgumentParser] = set()
 
 
 def add_argument_parser(parser: ArgumentParser):
