@@ -11,8 +11,12 @@ from fishsense_common.scheduling.job_definition import JobYaml
 
 
 class CliScheduler:
-    def run(self, name: str = None, description: str = None):
-        parser = ArgumentParser(name, description)
+    def __init__(self, name: str = None, description: str = None):
+        self.__name = name
+        self.__description = description
+
+    def __call__(self):
+        parser = ArgumentParser(prog=self.__name, description=self.__description)
 
         parser.add_argument(
             "job_definition_globs",
