@@ -1,30 +1,36 @@
-import importlib
-from argparse import ArgumentParser
+from argparse import ArgumentParser, _SubParsersAction
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
 import yaml
 from tqdm import tqdm
 
 from fishsense_common.scheduling.job import Job
 from fishsense_common.scheduling.job_definition import JobYaml
+from fishsense_common.scheduling.scheduler import Scheduler
 
 
-class CliScheduler:
+class CliScheduler(Scheduler):
     def __init__(self, name: str = None, description: str = None):
-        self.__name = name
-        self.__description = description
+        super().__init__()
 
-    def __call__(self):
-        parser = ArgumentParser(prog=self.__name, description=self.__description)
+        self.__parser = ArgumentParser(prog=name, description=description)
+        subparsers = self.__parser.add_subparsers(dest="command")
+        subparsers.required = True
 
-        parser.add_argument(
+        self.__register_run_job_command(subparsers)
+
+    def __register_run_job_command(self, subparsers: _SubParsersAction[ArgumentParser]):
+        subparser = subparsers.add_parser("run-job", description="Runs job file.")
+        subparser.set_defaults(run_command=self.__run_job_command)
+
+        subparser.add_argument(
             "job_definition_globs",
             nargs="+",
             help="The job definition to run.",
         )
 
-        args = parser.parse_args()
+    def __run_job_command(self, args: Any):
         job_definitions_path: List[Path] = [
             p for g in args.job_definition_globs for p in Path(g).glob()
         ]
@@ -34,8 +40,17 @@ class CliScheduler:
                 job_yaml: JobYaml = yaml.safe_load(f)
 
             for job_definition in job_yaml.jobs:
-                module = importlib.import_module(job_definition.module)
-                class_type = getattr(module, job_definition.class_name)
+                if job_definition.job_name not in self.job_types:
+                    raise ValueError(f"Job type {job_definition.job_name} not found.")
 
-                class_instance: Job = class_type(job_definition)
-                class_instance.run()
+                job_type = self.job_types[job_definition.job_name]
+                job = job_type(job_definition)
+
+                if not isinstance(job, Job):
+                    raise ValueError(f"Job {job_definition.job_name} is not a Job.")
+
+                job()
+
+    def __call__(self):
+        args = self.__parser.parse_args()
+        args.run_command(args)

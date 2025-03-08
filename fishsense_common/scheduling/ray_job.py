@@ -62,7 +62,7 @@ class RayJob(Job, ABC):
     def prologe(self) -> Iterable[Iterable[Any]]:
         raise NotImplementedError
 
-    def run(self) -> None:
+    def __call__(self) -> None:
         self.__init_ray()
 
         parameters = self.prologe()

@@ -7,15 +7,11 @@ class JobDefinition:
     def __init__(
         self,
         display_name: str,
-        package: str,
-        module: str,
-        class_name: str,
+        job_name: str,
         parameters: Dict[str, Any],
     ):
         self.display_name = display_name
-        self.package = package
-        self.module = module
-        self.class_name = class_name
+        self.job_name = job_name
         self.parameters = parameters
 
 

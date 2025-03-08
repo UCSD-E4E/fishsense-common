@@ -12,7 +12,9 @@ class Job(ABC):
 
     def __init__(self, job_definition: JobDefinition):
         super().__init__()
-        Job.type_parsers.sort(key=lambda p: p.priority)
+
+        if not hasattr(self, "name"):
+            raise ValueError("Job must have a name. Please define a name attribute.")
 
         self.__job_definition = job_definition
         self.__fill_parameters()
@@ -76,5 +78,5 @@ class Job(ABC):
             )
 
     @abstractmethod
-    def run(self) -> None:
+    def __call__(self) -> None:
         raise NotImplementedError
