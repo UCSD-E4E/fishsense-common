@@ -11,8 +11,8 @@ from fishsense_common.scheduling.job_definition import JobDefinition
 
 
 class RayJob(Job, ABC):
-    @abstractmethod
     @property
+    @abstractmethod
     def job_count(self) -> int:
         raise NotImplementedError
 
