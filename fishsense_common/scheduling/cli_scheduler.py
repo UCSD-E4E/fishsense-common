@@ -1,4 +1,4 @@
-from argparse import ArgumentParser
+from argparse import _SubParsersAction, ArgumentParser
 from pathlib import Path
 from typing import Any, List
 
@@ -18,13 +18,20 @@ class CliScheduler(Scheduler):
         subparsers = self.__parser.add_subparsers(dest="command")
         subparsers.required = True
 
-        self.__register_run_job_command(subparsers)
+        self.__register_list_jobs_command(subparsers)
+        self.__register_run_jobs_command(subparsers)
 
-    def __register_run_job_command(self, subparsers: Any):
+    def __register_list_jobs_command(self, subparsers: _SubParsersAction):
         subparser: ArgumentParser = subparsers.add_parser(
-            "run-job", description="Runs job file."
+            "list-jobs", description="Lists all available jobs."
         )
-        subparser.set_defaults(run_command=self.__run_job_command)
+        subparser.set_defaults(run_command=self.__list_jobs_command)
+
+    def __register_run_jobs_command(self, subparsers: _SubParsersAction):
+        subparser: ArgumentParser = subparsers.add_parser(
+            "run-jobs", description="Runs a job file."
+        )
+        subparser.set_defaults(run_command=self.__run_jobs_command)
 
         subparser.add_argument(
             "job_definition_globs",
@@ -32,7 +39,7 @@ class CliScheduler(Scheduler):
             help="The job definition to run.",
         )
 
-    def __run_job_command(self, args: Any):
+    def __run_jobs_command(self, args: Any):
         job_definitions_path: List[Path] = [
             p for g in args.job_definition_globs for p in Path(g).glob()
         ]
@@ -52,6 +59,11 @@ class CliScheduler(Scheduler):
                     raise ValueError(f"Job {job_definition.job_name} is not a Job.")
 
                 job()
+
+    def __list_jobs_command(self, args: Any):
+        print("Registered Job Types:")
+        for job_type in self.job_types:
+            print(f"  - {job_type}")
 
     def __call__(self):
         args = self.__parser.parse_args()
