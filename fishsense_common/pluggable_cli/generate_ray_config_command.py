@@ -1,7 +1,6 @@
 from multiprocessing import cpu_count
 from pathlib import Path
 
-import torch
 import yaml
 from platformdirs import user_config_dir
 
@@ -23,6 +22,8 @@ class GenerateRayConfigCommand(Command):
         return "Generates a Ray config that can be used to customize the consumption of Ray commands."
 
     def __call__(self):
+        import torch # We want to avoid importing 
+
         max_num_cpu = min(cpu_count(), self.max_num_cpu or 1000)
         max_num_gpu = min(
             torch.cuda.device_count() if torch.cuda.is_available() else 1000,

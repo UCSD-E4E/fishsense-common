@@ -1,10 +1,11 @@
 import math
 
 import ray
-import torch
 
 
 def remote(vram_mb: int):
+    import torch
+
     if not torch.cuda.is_available():
         return ray.remote
 

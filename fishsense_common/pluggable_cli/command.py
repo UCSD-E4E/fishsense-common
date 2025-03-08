@@ -9,9 +9,8 @@ from pathlib import Path
 from typing import Any, Iterable, Tuple
 
 import ray
-import torch
 import yaml
-from appdirs import user_config_dir
+from platformdirs import user_config_dir
 from tqdm import tqdm
 
 from fishsense_common import __version__
@@ -86,6 +85,8 @@ class Command:
             yaml.safe_dump(config, f)
 
     def init_ray(self) -> Tuple[int, int]:
+        import torch
+
         ray_config_path = (
             Path(user_config_dir("RayCli", "Engineers for Exploration", __version__))
             / "ray.yaml"
