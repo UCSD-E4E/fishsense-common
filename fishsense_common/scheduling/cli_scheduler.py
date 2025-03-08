@@ -11,7 +11,7 @@ from fishsense_common.scheduling.job_definition import JobYaml
 
 
 class CliScheduler:
-    def run(self, name: str, description: str):
+    def run(self, name: str = None, description: str = None):
         parser = ArgumentParser(name, description)
 
         parser.add_argument(
