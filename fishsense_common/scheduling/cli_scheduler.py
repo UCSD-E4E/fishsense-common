@@ -1,4 +1,4 @@
-from argparse import _SubParsersAction, ArgumentParser
+from argparse import ArgumentParser, _SubParsersAction
 from pathlib import Path
 from typing import Any, List
 
@@ -62,7 +62,7 @@ class CliScheduler(Scheduler):
 
     def __list_jobs_command(self, args: Any):
         print("Registered Job Types:")
-        for job_type in self.job_types:
+        for job_type in self.job_types.keys():
             print(f"  - {job_type}")
 
     def __call__(self):
