@@ -7,7 +7,6 @@ class Argument:
         self,
         name: str,
         nargs: str,
-        dest: str,
         type: Any,
         required: bool,
         default: Any,
