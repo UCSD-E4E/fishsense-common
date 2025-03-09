@@ -108,13 +108,13 @@ class RayJob(Job, ABC):
         )
 
     @abstractmethod
-    def prologe(self) -> Iterable[Iterable[Any]]:
+    def prologue(self) -> Iterable[Iterable[Any]]:
         raise NotImplementedError
 
     def __call__(self) -> None:
         self.__init_ray()
 
-        parameters = self.prologe()
+        parameters = self.prologue()
 
         results = self.__tqdm(
             (self.__function.remote(*p) for p in parameters),
