@@ -2,7 +2,7 @@ import math
 from abc import ABC, abstractmethod
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import Any, Callable, Iterable, Tuple
+from typing import Any, Callable, Iterable, List, Tuple
 
 import ray
 import ray.remote_function
@@ -117,7 +117,7 @@ class RayJob(Job, ABC):
         parameters = self.prologue()
 
         results = self.__tqdm(
-            (self.__function.remote(*p) for p in parameters),
+            [self.__function.remote(*p) for p in parameters],
             total=self.job_count,
             position=1,
             desc=self.job_definition.display_name,
@@ -126,5 +126,5 @@ class RayJob(Job, ABC):
         self.epiloge(results)
 
     @abstractmethod
-    def epiloge(self, results: Iterable[Any]) -> None:
+    def epiloge(self, results: List[ray.ObjectRef]) -> None:
         raise NotImplementedError
