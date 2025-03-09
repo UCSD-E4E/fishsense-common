@@ -55,6 +55,11 @@ class Job(ABC):
                         f"Argument {argument.name} is required but not provided."
                     )
 
+                setattr(
+                    self,
+                    member,
+                    argument.default,
+                )
                 continue
 
             if argument.nargs == "+" and not isinstance(
