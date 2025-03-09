@@ -6,7 +6,7 @@ import yaml
 from tqdm import tqdm
 
 from fishsense_common.scheduling.job import Job
-from fishsense_common.scheduling.job_definition import JobYaml
+from fishsense_common.scheduling.job_definition import JobDefinition
 from fishsense_common.scheduling.scheduler import Scheduler
 
 
@@ -46,9 +46,14 @@ class CliScheduler(Scheduler):
 
         for path in tqdm(job_definitions_path, position=0, desc="Running jobs"):
             with open(path, "r") as f:
-                job_yaml: JobYaml = yaml.full_load(f)
+                job_dict = yaml.safe_load(f)
 
-            for job_definition in job_yaml.jobs:
+            if "jobs" not in job_dict:
+                raise ValueError("No jobs found in job definition.")
+
+            jobs = (JobDefinition(**j) for j in job_dict["jobs"])
+
+            for job_definition in jobs:
                 if job_definition.job_name not in self.job_types:
                     raise ValueError(f"Job type {job_definition.job_name} not found.")
 
