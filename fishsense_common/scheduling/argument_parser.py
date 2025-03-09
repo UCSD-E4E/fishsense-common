@@ -1,6 +1,6 @@
 import math
 from abc import ABC, abstractmethod
-from typing import Any, Set
+from typing import Any, List, Set
 
 from fishsense_common.scheduling.arguments import Argument
 
@@ -16,8 +16,23 @@ class ArgumentParser(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def parse(self, argument: Argument, value: str):
+    def parse(self, argument: Argument, value: Any):
         raise NotImplementedError
+
+
+class __ListArgumentParser(ArgumentParser):
+    @property
+    def priority(self) -> float:
+        return 1
+
+    def can_parse(self, argument: Argument) -> bool:
+        return argument.nargs == "+" or argument.nargs == "*"
+
+    def parse(self, argument: Argument, value: List[Any]):
+        if all(isinstance(v, argument.type) for v in value):
+            return value
+
+        return [argument.type(v) for v in value]
 
 
 class __GenericArgumentParser(ArgumentParser):
@@ -48,4 +63,5 @@ def parse_argument(argument: Argument, value: str) -> Any:
     return type_parser.parse(argument, value)
 
 
+add_argument_parser(__ListArgumentParser())
 add_argument_parser(__GenericArgumentParser())
