@@ -53,6 +53,7 @@ class CliScheduler(Scheduler):
         subparser.add_argument(
             "--max-cpu",
             "-c",
+            dest="max_num_cpu",
             type=float,
             help="Sets the maximum number of CPU cores allowed.",
         )
@@ -60,6 +61,7 @@ class CliScheduler(Scheduler):
         subparser.add_argument(
             "--max-gpu",
             "-g",
+            dest="max_num_gpu",
             type=float,
             help="Sets the maximum number of GPU kernels allowed.",
         )
