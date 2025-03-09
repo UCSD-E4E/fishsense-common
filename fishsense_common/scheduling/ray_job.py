@@ -1,11 +1,17 @@
 import math
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable
+from multiprocessing import cpu_count
+from pathlib import Path
+from typing import Any, Callable, Iterable, Tuple
 
 import ray
 import ray.remote_function
+import yaml
+from platformdirs import user_config_dir
 from tqdm import tqdm
 
+from fishsense_common import __version__
+from fishsense_common.scheduling.arguments import argument
 from fishsense_common.scheduling.job import Job
 from fishsense_common.scheduling.job_definition import JobDefinition
 
@@ -16,12 +22,28 @@ class RayJob(Job, ABC):
     def job_count(self) -> int:
         raise NotImplementedError
 
+    @property
+    @argument("--max-cpu", help="Sets the maximum number of CPU cores allowed.")
+    def max_num_cpu(self) -> int:
+        return self.__max_num_cpu
+
+    @max_num_cpu.setter
+    def max_num_cpu(self, value: int):
+        self.__max_num_cpu = value
+
+    @property
+    @argument("--max-gpu", help="Sets the maximum number of GPU kernels allowed.")
+    def max_num_gpu(self) -> int:
+        return self.__max_num_gpu
+
+    @max_num_gpu.setter
+    def max_num_gpu(self, value: int):
+        self.__max_num_gpu = value
+
     def __init__(
         self,
         job_definition: JobDefinition,
         function: Callable,
-        num_cpus: float = None,
-        num_gpus: float = None,
         vram_mb: int = None,
     ):
         super().__init__(job_definition)
@@ -43,8 +65,8 @@ class RayJob(Job, ABC):
         if not hasattr(function, "remote"):
             function = ray.remote(function)
 
-        self.__num_cpus: float = num_cpus
-        self.__num_gpus: float = num_gpus
+        self.__max_num_cpu: int = None
+        self.__max_num_gpu: int = None
         self.__function: ray.remote_function.RemoteFunction = function
 
     def __to_iterator(self, futures: Iterable[ray.ObjectRef]) -> Iterable[Any]:
@@ -55,8 +77,34 @@ class RayJob(Job, ABC):
     def __tqdm(self, futures: Iterable[ray.ObjectRef], **kwargs) -> Iterable[Any]:
         return tqdm(self.__to_iterator(futures), **kwargs)
 
-    def __init_ray(self):
-        ray.init(num_cpus=self.__num_cpus, num_gpus=self.__num_gpus)
+    def __init_ray(self) -> Tuple[float, float]:
+        import torch
+
+        ray_config_path = (
+            Path(user_config_dir("RayCli", "Engineers for Exploration", __version__))
+            / "ray.yaml"
+        )
+
+        ray_config = {}
+        if ray_config_path.exists():
+            with ray_config_path.open("r") as f:
+                ray_config = yaml.safe_load(f)
+
+        # Allow override of num_cpus and num_gpus.
+        if self.max_num_cpu is not None:
+            ray_config["num_cpus"] = min(cpu_count(), self.__max_num_cpu or 0)
+
+        if self.max_num_gpu is not None:
+            ray_config["num_gpus"] = min(
+                torch.cuda.device_count() if torch.cuda.is_available() else 1000,
+                self.__max_num_gpu or 0,
+            )
+
+        ray.init(**ray_config)
+
+        return ray_config["num_cpus"], (
+            ray_config["num_gpus"] if "num_gpus" in ray_config else None
+        )
 
     @abstractmethod
     def prologe(self) -> Iterable[Iterable[Any]]:
