@@ -48,7 +48,8 @@ class RayJob(Job, ABC):
     ):
         super().__init__(job_definition)
 
-        if num_gpus is None:
+        num_gpus = None
+        if vram_mb is not None:
             import torch
 
             available_vram_mb = (
@@ -63,7 +64,7 @@ class RayJob(Job, ABC):
             num_gpus = percent_of_available_vram
 
         if not hasattr(function, "remote"):
-            function = ray.remote(function)
+            function = ray.remote(num_gpus=num_gpus)(function)
 
         self.__max_num_cpu: int = None
         self.__max_num_gpu: int = None
