@@ -15,7 +15,6 @@ class Argument:
     ) -> None:
         self.name = name
         self.nargs = nargs
-        self.dest = dest
         self.type = type
         self.required = required
         self.default = default
@@ -46,7 +45,6 @@ def argument(
         ARGUMENTS[full_name] = Argument(
             name,
             _nargs,
-            func.__name__,
             argument_type,
             required,
             default,

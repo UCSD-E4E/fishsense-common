@@ -42,7 +42,7 @@ class Job(ABC):
 
     def __fill_parameters(self):
         for member in dir(self):
-            if member.startswith("__"):
+            if member.startswith("_"):
                 continue
 
             argument = self.__get_argument(self.__class__, member)
