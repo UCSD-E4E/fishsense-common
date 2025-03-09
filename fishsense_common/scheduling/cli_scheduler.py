@@ -46,7 +46,7 @@ class CliScheduler(Scheduler):
 
         for path in tqdm(job_definitions_path, position=0, desc="Running jobs"):
             with open(path, "r") as f:
-                job_yaml: JobYaml = yaml.safe_load(f)
+                job_yaml: JobYaml = yaml.full_load(f)
 
             for job_definition in job_yaml.jobs:
                 if job_definition.job_name not in self.job_types:

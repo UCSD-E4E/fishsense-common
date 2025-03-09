@@ -15,7 +15,7 @@ class JobDefinition:
         self.parameters = parameters
 
 
-class JobYaml(yaml.YAMLObjectMetaclass):
+class JobYaml(yaml.YAMLObject):
     yaml_tag = "!JobDefinition"
 
     def __init__(self, jobs: List[JobDefinition]):
