@@ -54,6 +54,7 @@ class CliScheduler(Scheduler):
             "--max-cpu",
             "-c",
             dest="max_num_cpu",
+            default=1000,
             type=float,
             help="Sets the maximum number of CPU cores allowed.",
         )
@@ -62,6 +63,7 @@ class CliScheduler(Scheduler):
             "--max-gpu",
             "-g",
             dest="max_num_gpu",
+            default=1000,
             type=float,
             help="Sets the maximum number of GPU kernels allowed.",
         )
@@ -100,7 +102,7 @@ class CliScheduler(Scheduler):
     def __generate_ray_config_command(self, args: Any):
         import torch  # We want to avoid importing
 
-        max_num_cpu = min(cpu_count(), args.max_num_cpu or 1000)
+        max_num_cpu = min(cpu_count(), args.max_num_cpu)
         max_num_gpu = min(
             torch.cuda.device_count() if torch.cuda.is_available() else 1000,
             args.max_num_gpu or 0,
