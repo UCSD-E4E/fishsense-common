@@ -41,7 +41,7 @@ class CliScheduler(Scheduler):
 
     def __run_jobs_command(self, args: Any):
         job_definitions_path: List[Path] = [
-            p for g in args.job_definition_globs for p in Path(g).glob()
+            p for g in args.job_definition_globs for p in Path.glob(g)
         ]
 
         for path in tqdm(job_definitions_path, position=0, desc="Running jobs"):
