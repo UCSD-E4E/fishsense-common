@@ -125,6 +125,8 @@ class RayJob(Job, ABC):
 
         self.epiloge(results)
 
+        ray.shutdown()
+
     @abstractmethod
     def epiloge(self, results: List[ray.ObjectRef]) -> None:
         raise NotImplementedError
