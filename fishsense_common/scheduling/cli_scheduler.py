@@ -56,7 +56,7 @@ class CliScheduler(Scheduler):
             "-c",
             dest="max_num_cpu",
             default=1000,
-            type=float,
+            type=int,
             help="Sets the maximum number of CPU cores allowed.",
         )
 
@@ -65,7 +65,7 @@ class CliScheduler(Scheduler):
             "-g",
             dest="max_num_gpu",
             default=1000,
-            type=float,
+            type=int,
             help="Sets the maximum number of GPU kernels allowed.",
         )
 
