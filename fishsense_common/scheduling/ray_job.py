@@ -101,6 +101,9 @@ class RayJob(Job, ABC):
                 self.__max_num_gpu or 0,
             )
 
+        ray_config["ignore_reinit_error"] = True
+        ray_config["local_mode"] = True
+
         ray.init(**ray_config)
 
         return ray_config["num_cpus"], (
