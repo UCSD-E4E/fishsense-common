@@ -119,7 +119,7 @@ class RayJob(Job, ABC):
         results = self.__tqdm(
             [self.__function.remote(*p) for p in parameters],
             total=self.job_count,
-            position=1,
+            position=2,
             desc=self.job_definition.display_name,
         )
 

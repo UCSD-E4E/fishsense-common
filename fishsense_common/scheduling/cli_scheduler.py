@@ -74,16 +74,16 @@ class CliScheduler(Scheduler):
             Path(f) for g in args.job_definition_globs for f in glob(g)
         ]
 
-        for path in tqdm(job_definitions_path, position=0, desc="Running jobs"):
+        for path in tqdm(job_definitions_path, position=0, desc="Job files"):
             with open(path, "r") as f:
                 job_dict = yaml.safe_load(f)
 
             if "jobs" not in job_dict:
                 raise ValueError("No jobs found in job definition.")
 
-            jobs = (JobDefinition(**j) for j in job_dict["jobs"])
+            jobs = [JobDefinition(**j) for j in job_dict["jobs"]]
 
-            for job_definition in jobs:
+            for job_definition in tqdm(jobs, position=1, desc="Running job"):
                 if job_definition.job_name not in self.job_types:
                     raise ValueError(f"Job type {job_definition.job_name} not found.")
 
