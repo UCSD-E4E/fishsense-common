@@ -1,3 +1,4 @@
+import inspect
 from typing import Callable, List, Tuple
 
 
@@ -9,7 +10,9 @@ class Pipeline:
         for task in self.__tasks:
             output_name: str | Tuple[str, ...] = getattr(task, "output_name", None)
 
-            results = task(**kwargs)
+            task_signature = inspect.signature(task)
+            task_parameters = task_signature.parameters
+            results = task(*(kwargs[param] for param in task_parameters))
 
             if output_name:
                 if isinstance(output_name, str):
