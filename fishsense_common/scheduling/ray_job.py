@@ -1,4 +1,5 @@
 import math
+import sys
 from abc import ABC, abstractmethod
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -40,6 +41,10 @@ class RayJob(Job, ABC):
     def max_num_gpu(self, value: int):
         self.__max_num_gpu = value
 
+    @property
+    def __debugger_attached(self) -> bool:
+        return sys.gettrace() is not None
+
     def __init__(
         self,
         job_definition: JobDefinition,
@@ -63,7 +68,7 @@ class RayJob(Job, ABC):
 
             num_gpus = percent_of_available_vram
 
-        if not hasattr(function, "remote"):
+        if not hasattr(function, "remote") and not self.__debugger_attached:
             function = ray.remote(num_gpus=num_gpus)(function)
 
         self.__max_num_cpu: int = None
