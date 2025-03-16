@@ -1,3 +1,4 @@
+import inspect
 import math
 import sys
 from abc import ABC, abstractmethod
@@ -43,6 +44,10 @@ class RayJob(Job, ABC):
 
     @property
     def __debugger_attached(self) -> bool:
+        for frame in inspect.stack():
+            if "pydevd" in frame.filename:
+                return True
+
         return sys.gettrace() is not None
 
     def __init__(
@@ -121,12 +126,20 @@ class RayJob(Job, ABC):
 
         parameters = self.prologue()
 
-        results = self.__tqdm(
-            [self.__function.remote(*p) for p in parameters],
-            total=self.job_count,
-            position=2,
-            desc=self.job_definition.display_name,
-        )
+        if hasattr(self.__function, "remote"):
+            results = self.__tqdm(
+                [self.__function.remote(*p) for p in parameters],
+                total=self.job_count,
+                position=2,
+                desc=self.job_definition.display_name,
+            )
+        else:
+            results = tqdm(
+                (self.__function(*p) for p in parameters),
+                total=self.job_count,
+                position=2,
+                desc=self.job_definition.display_name,
+            )
 
         self.epiloge(results)
 
