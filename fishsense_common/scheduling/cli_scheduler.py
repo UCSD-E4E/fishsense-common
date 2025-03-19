@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser, _SubParsersAction
 from glob import glob
 from multiprocessing import cpu_count
@@ -108,6 +109,12 @@ class CliScheduler(Scheduler):
             torch.cuda.device_count() if torch.cuda.is_available() else 1000,
             args.max_num_gpu or 0,
         )
+
+        if "FSL_MAX_CPU" in os.environ:
+            max_num_cpu = int(os.environ["FSL_MAX_CPU"])
+
+        if "FSL_MAX_GPU" in os.environ:
+            max_num_gpu = int(os.environ["FSL_MAX_GPU"])
 
         if max_num_gpu == 0 or max_num_gpu == 1000:
             max_num_gpu = None
