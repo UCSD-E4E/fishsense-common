@@ -1,5 +1,6 @@
 import inspect
 import math
+import os
 import sys
 from abc import ABC, abstractmethod
 from multiprocessing import cpu_count
@@ -110,6 +111,12 @@ class RayJob(Job, ABC):
                 torch.cuda.device_count() if torch.cuda.is_available() else 1000,
                 self.__max_num_gpu or 0,
             )
+
+        if "FSL_MAX_CPU" in os.environ:
+            ray_config["num_cpus"] = int(os.environ["FSL_MAX_CPU"])
+
+        if "FSL_MAX_GPU" in os.environ:
+            ray_config["num_gpus"] = int(os.environ["FSL_MAX_GPU"])
 
         ray.init(**ray_config)
 

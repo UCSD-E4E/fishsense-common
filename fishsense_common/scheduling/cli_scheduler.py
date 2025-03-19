@@ -110,12 +110,6 @@ class CliScheduler(Scheduler):
             args.max_num_gpu or 0,
         )
 
-        if "FSL_MAX_CPU" in os.environ:
-            max_num_cpu = int(os.environ["FSL_MAX_CPU"])
-
-        if "FSL_MAX_GPU" in os.environ:
-            max_num_gpu = int(os.environ["FSL_MAX_GPU"])
-
         if max_num_gpu == 0 or max_num_gpu == 1000:
             max_num_gpu = None
 
