@@ -1,4 +1,3 @@
-import os
 from argparse import ArgumentParser, _SubParsersAction
 from glob import glob
 from multiprocessing import cpu_count
