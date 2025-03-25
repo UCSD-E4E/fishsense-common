@@ -3,7 +3,7 @@ from argparse import ArgumentParser, _SubParsersAction
 from glob import glob
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import Any, List
+from typing import Any, Callable, List
 
 import yaml
 from platformdirs import user_config_dir
@@ -76,9 +76,14 @@ class CliScheduler(Scheduler):
         ]
 
         for path in tqdm(job_definitions_path, position=0, desc="Job files"):
-            func = yaml.safe_load
-            if path.suffix == ".json":
+            func: Callable = None
+            if path.suffix == ".yaml":
+                func = yaml.safe_load
+            elif path.suffix == ".json":
                 func = json.load
+            else:
+                # Raise a not supported error for any other file type
+                raise ValueError(f"File type {path.suffix} not supported.")
 
             with open(path, "r") as f:
                 job_dict = func(f)
