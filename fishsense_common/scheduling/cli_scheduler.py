@@ -77,7 +77,7 @@ class CliScheduler(Scheduler):
 
         for path in tqdm(job_definitions_path, position=0, desc="Job files"):
             func: Callable = None
-            if path.suffix == ".yaml":
+            if path.suffix == ".yaml" or path.suffix == ".yml":
                 func = yaml.safe_load
             elif path.suffix == ".json":
                 func = json.load
