@@ -3,10 +3,11 @@ from typing import Any, Callable, List, Tuple
 
 
 class Pipeline:
-    def __init__(self, *tasks: List[Callable]):
+    def __init__(self, *tasks: List[Callable], return_name: str = None):
         self.__tasks = tasks
+        self.__return_name = return_name
 
-    def __call__(self, return_name: str, **kwargs) -> Any:
+    def __call__(self, **kwargs) -> Any:
         for task in self.__tasks:
             output_name: str | Tuple[str, ...] = getattr(task, "output_name", None)
 
@@ -21,4 +22,5 @@ class Pipeline:
                     for name, result in zip(output_name, results):
                         kwargs[name] = result
 
-        return kwargs[return_name]
+        if self.__return_name is not None:
+            return kwargs[self.__return_name]
