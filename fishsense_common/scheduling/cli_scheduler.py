@@ -1,3 +1,4 @@
+import json
 from argparse import ArgumentParser, _SubParsersAction
 from glob import glob
 from multiprocessing import cpu_count
@@ -75,8 +76,12 @@ class CliScheduler(Scheduler):
         ]
 
         for path in tqdm(job_definitions_path, position=0, desc="Job files"):
+            func = yaml.safe_load
+            if path.suffix == ".json":
+                func = json.load
+
             with open(path, "r") as f:
-                job_dict = yaml.safe_load(f)
+                job_dict = func(f)
 
             if "jobs" not in job_dict:
                 raise ValueError("No jobs found in job definition.")
