@@ -148,10 +148,10 @@ class RayJob(Job, ABC):
                 desc=self.job_definition.display_name,
             )
 
-        self.epiloge(results)
+        self.epilogue(results)
 
         ray.shutdown()
 
     @abstractmethod
-    def epiloge(self, results: List[ray.ObjectRef]) -> None:
+    def epilogue(self, results: List[ray.ObjectRef]) -> None:
         raise NotImplementedError
