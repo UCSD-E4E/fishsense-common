@@ -131,7 +131,8 @@ class RayJob(Job, ABC):
         raise NotImplementedError
 
     def __call__(self) -> None:
-        self.__init_ray()
+        if not self.__debugger_attached:
+            self.__init_ray()
 
         parameters = self.prologue()
 
