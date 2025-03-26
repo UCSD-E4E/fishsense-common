@@ -48,6 +48,8 @@ class RayJob(Job, ABC):
         for frame in inspect.stack():
             if "pydevd" in frame.filename:
                 return True
+            elif "pdb" in frame.filename:
+                return True
 
         return sys.gettrace() is not None
 
