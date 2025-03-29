@@ -4,7 +4,7 @@ import os
 def get_most_free_gpu() -> int | None:
     import cupy
 
-    if cupy.cuda.isavailable():
+    if cupy.cuda.is_available():
         # Index 0 is free memory, index 1 is total memory
         free_memory = [
             cupy.cuda.runtime.memGetInfo(i)[0]
