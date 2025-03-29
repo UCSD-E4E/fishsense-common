@@ -1,3 +1,6 @@
+import os
+
+
 def get_most_free_gpu() -> int | None:
     import cupy
 
@@ -23,8 +26,4 @@ def get_pytorch_device() -> str:
 
 
 def set_opencv_opencl_device() -> None:
-    import cv2
-
-    if cv2.ocl.haveOpenCL():
-        context = cv2.ocl.Context()
-        cv2.ocl.setOpenCLDevice(context.device(get_most_free_gpu()))
+    os.environ["OPENCV_OPENCL_DEVICE"] = f":GPU:{get_most_free_gpu()}"
