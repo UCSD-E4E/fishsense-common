@@ -25,9 +25,9 @@ class Pipeline:
                 if not status:
                     if self.__return_name is not None:
                         if isinstance(self.__return_name, str):
-                            return None
+                            return statuses, None
                         else:
-                            return tuple(None for name in self.__return_name)
+                            return statuses, tuple(None for name in self.__return_name)
 
                 results = status.return_value
             else:
@@ -42,6 +42,6 @@ class Pipeline:
 
         if self.__return_name is not None:
             if isinstance(self.__return_name, str):
-                return kwargs[self.__return_name]
+                return statuses, kwargs[self.__return_name]
             else:
-                return tuple(kwargs[name] for name in self.__return_name)
+                return statuses, tuple(kwargs[name] for name in self.__return_name)
