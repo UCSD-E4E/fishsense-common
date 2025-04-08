@@ -20,5 +20,5 @@ def ok(return_value: Any) -> Status:
     return Status(True, return_value)
 
 
-def error(return_value: Any) -> Status:
-    return Status(False, return_value)
+def error(error_str: str) -> Status:
+    return Status(False, error_str)
