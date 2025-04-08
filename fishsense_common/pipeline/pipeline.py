@@ -27,7 +27,9 @@ class Pipeline:
                         if isinstance(self.__return_name, str):
                             return statuses, None
                         else:
-                            return statuses, tuple(None for name in self.__return_name)
+                            return statuses, tuple(None for _ in self.__return_name)
+                        
+                    return statuses, None
 
                 results = status.return_value
             else:
