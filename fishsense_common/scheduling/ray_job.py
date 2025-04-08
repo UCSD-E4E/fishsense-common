@@ -26,7 +26,7 @@ class RayJob(Job, ABC):
         raise NotImplementedError
 
     @property
-    @argument("--max-cpu", help="Sets the maximum number of CPU cores allowed.")
+    @argument("max-cpu", help="Sets the maximum number of CPU cores allowed.")
     def max_num_cpu(self) -> int:
         return self.__max_num_cpu
 
@@ -35,7 +35,7 @@ class RayJob(Job, ABC):
         self.__max_num_cpu = value
 
     @property
-    @argument("--max-gpu", help="Sets the maximum number of GPU kernels allowed.")
+    @argument("max-gpu", help="Sets the maximum number of GPU kernels allowed.")
     def max_num_gpu(self) -> int:
         return self.__max_num_gpu
 
@@ -92,6 +92,9 @@ class RayJob(Job, ABC):
         return tqdm(self.__to_iterator(futures), **kwargs)
 
     def __init_ray(self) -> Tuple[float, float]:
+        if ray.is_initialized():
+            return None, None
+
         import torch
 
         ray_config_path = (
@@ -152,8 +155,6 @@ class RayJob(Job, ABC):
             )
 
         self.epilogue(results)
-
-        ray.shutdown()
 
     @abstractmethod
     def epilogue(self, results: List[ray.ObjectRef]) -> None:

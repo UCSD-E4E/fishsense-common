@@ -5,6 +5,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any, Callable, List
 
+import ray
 import yaml
 from platformdirs import user_config_dir
 from tqdm import tqdm
@@ -104,6 +105,9 @@ class CliScheduler(Scheduler):
                     raise ValueError(f"Job {job_definition.job_name} is not a Job.")
 
                 job()
+
+        if ray.is_initialized():
+            ray.shutdown()
 
     def __list_jobs_command(self, args: Any):
         print("Registered Job Types:")
