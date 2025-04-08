@@ -3,7 +3,7 @@ from typing import Any, Callable, List, Tuple
 
 
 class Pipeline:
-    def __init__(self, *tasks: List[Callable], return_name: str = None):
+    def __init__(self, *tasks: List[Callable], return_name: str | Tuple[str] = None):
         self.__tasks = tasks
         self.__return_name = return_name
 
@@ -23,4 +23,7 @@ class Pipeline:
                         kwargs[name] = result
 
         if self.__return_name is not None:
-            return kwargs[self.__return_name]
+            if isinstance(self.__return_name, str):
+                return kwargs[self.__return_name]
+            else:
+                return tuple(kwargs[name] for name in self.__return_name)
