@@ -17,12 +17,10 @@ dependencies = [
     "cupy-cuda12x (>=13.4.1,<14.0.0)",
 ]
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.29.5"
-black = "^25.1.0"
-pylint = "^3.3.4"
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "ipykernel>=6.29.5",
+    "pylint>=3.3.6",
+]
 
