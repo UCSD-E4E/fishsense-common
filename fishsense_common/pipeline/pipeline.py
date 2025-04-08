@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, List, Tuple
 
 from fishsense_common.pipeline.status import Status
 
@@ -9,9 +9,7 @@ class Pipeline:
         self.__tasks = tasks
         self.__return_name = return_name
 
-    def __call__(self, **kwargs) -> Tuple[Dict[str, bool], Any]:
-        statuses: Dict[str, bool] = {}
-
+    def __call__(self, **kwargs) -> Tuple[str, Any]:
         for task in self.__tasks:
             output_name: str | Tuple[str, ...] = getattr(task, "output_name", None)
 
@@ -20,16 +18,16 @@ class Pipeline:
             status = task(*(kwargs[param] for param in task_parameters))
 
             if isinstance(status, Status):
-                statuses[task.__name__] = status.status
-
                 if not status.status:
                     if self.__return_name is not None:
                         if isinstance(self.__return_name, str):
-                            return statuses, None
+                            return status.return_value, None
                         else:
-                            return statuses, tuple(None for _ in self.__return_name)
-                        
-                    return statuses, None
+                            return status.return_value, tuple(
+                                None for _ in self.__return_name
+                            )
+
+                    return status.return_value, None
 
                 results = status.return_value
             else:
@@ -44,6 +42,6 @@ class Pipeline:
 
         if self.__return_name is not None:
             if isinstance(self.__return_name, str):
-                return statuses, kwargs[self.__return_name]
+                return "SUCCESS", kwargs[self.__return_name]
             else:
-                return statuses, tuple(kwargs[name] for name in self.__return_name)
+                return "SUCCESS", tuple(kwargs[name] for name in self.__return_name)
