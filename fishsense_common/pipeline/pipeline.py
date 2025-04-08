@@ -22,7 +22,7 @@ class Pipeline:
             if isinstance(status, Status):
                 statuses[task.__name__] = status.status
 
-                if not status:
+                if not status.status:
                     if self.__return_name is not None:
                         if isinstance(self.__return_name, str):
                             return statuses, None
