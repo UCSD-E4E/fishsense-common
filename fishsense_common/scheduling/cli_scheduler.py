@@ -3,10 +3,11 @@ from argparse import ArgumentParser, _SubParsersAction
 from glob import glob
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import Any, Callable, List
+from typing import Any, Callable, Dict, List
 
 import ray
 import yaml
+from fsspec import filesystem
 from platformdirs import user_config_dir
 from tqdm import tqdm
 
@@ -71,6 +72,15 @@ class CliScheduler(Scheduler):
             help="Sets the maximum number of GPU kernels allowed.",
         )
 
+    def __parse_filesystem(self, filesyste_definition: Dict[str, Any]) -> filesystem:
+        if filesystem is None:
+            return filesystem("file")
+
+        protocol = filesyste_definition.get("protocol", "file")
+        kwargs = filesyste_definition.get("kwargs", {})
+
+        return filesystem(protocol, **kwargs)
+
     def __run_jobs_command(self, args: Any):
         job_definitions_path: List[Path] = [
             Path(f) for g in args.job_definition_globs for f in glob(g)
@@ -92,6 +102,12 @@ class CliScheduler(Scheduler):
             if "jobs" not in job_dict:
                 raise ValueError("No jobs found in job definition.")
 
+            input_filesystem = self.__parse_filesystem(
+                job_dict.get("input_filesystem", None)
+            )
+            output_filesystem = self.__parse_filesystem(
+                job_dict.get("input_filesystem", None)
+            )
             jobs = [JobDefinition(**j) for j in job_dict["jobs"]]
 
             for job_definition in tqdm(jobs, position=1, desc="Running job"):
@@ -99,7 +115,7 @@ class CliScheduler(Scheduler):
                     raise ValueError(f"Job type {job_definition.job_name} not found.")
 
                 job_type = self.job_types[job_definition.job_name]
-                job = job_type(job_definition)
+                job = job_type(job_definition, input_filesystem, output_filesystem)
 
                 if not isinstance(job, Job):
                     raise ValueError(f"Job {job_definition.job_name} is not a Job.")

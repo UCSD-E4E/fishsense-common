@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from fishsense_common.scheduling.argument_parser import parse_argument
 from fishsense_common.scheduling.arguments import ARGUMENTS, Argument
@@ -10,13 +11,20 @@ class Job(ABC):
     def job_definition(self) -> JobDefinition:
         return self.__job_definition
 
-    def __init__(self, job_definition: JobDefinition):
+    def __init__(
+        self,
+        job_definition: JobDefinition,
+        input_filesystem: Any,
+        output_filesystem: Any,
+    ):
         super().__init__()
 
         if not hasattr(self, "name"):
             raise ValueError("Job must have a name. Please define a name attribute.")
 
         self.__job_definition = job_definition
+        self.input_filesystem = input_filesystem
+        self.output_filesystem = output_filesystem
         self.__fill_parameters()
 
     def __get_argument(self, class_object: type, member: str) -> Argument:
