@@ -56,10 +56,12 @@ class RayJob(Job, ABC):
     def __init__(
         self,
         job_definition: JobDefinition,
+        input_filesystem: Any,
+        output_filesystem: Any,
         function: Callable,
         vram_mb: int = None,
     ):
-        super().__init__(job_definition)
+        super().__init__(job_definition, input_filesystem, output_filesystem)
 
         num_gpus = None
         if vram_mb is not None:
