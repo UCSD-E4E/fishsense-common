@@ -73,7 +73,7 @@ class CliScheduler(Scheduler):
         )
 
     def __parse_filesystem(self, filesyste_definition: Dict[str, Any]) -> filesystem:
-        if filesystem is None:
+        if filesyste_definition is None:
             return filesystem("file")
 
         protocol = filesyste_definition.get("protocol", "file")
@@ -103,10 +103,10 @@ class CliScheduler(Scheduler):
                 raise ValueError("No jobs found in job definition.")
 
             input_filesystem = self.__parse_filesystem(
-                job_dict.get("input_filesystem", None)
+                job_dict["input_filesystem"] if "input_filesystem" in job_dict else None
             )
             output_filesystem = self.__parse_filesystem(
-                job_dict.get("input_filesystem", None)
+                job_dict["output_filesystem"] if "output_filesystem" in job_dict else None
             )
             jobs = [JobDefinition(**j) for j in job_dict["jobs"]]
 
