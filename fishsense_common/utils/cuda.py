@@ -3,7 +3,11 @@ from typing import List
 
 
 def get_most_free_gpu() -> int | None:
-    import cupy
+    try:
+        import cupy
+    except ImportError:
+        # cupy is not installed, return None
+        return None
 
     if cupy.cuda.is_available():
         free_memory: List[int] = []
@@ -20,6 +24,12 @@ def get_most_free_gpu() -> int | None:
 
 
 def get_pytorch_device() -> str:
+    try:
+        import cupy
+    except ImportError:
+        # cupy is not installed, return CPU
+        return "cpu"
+
     import torch
 
     if torch.cuda.is_available():

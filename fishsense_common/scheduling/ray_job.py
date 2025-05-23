@@ -97,6 +97,12 @@ class RayJob(Job, ABC):
         if ray.is_initialized():
             return None, None
 
+        if "RAY_ADDRESS" in os.environ:
+            ray.init()
+
+            return None, None
+
+        # Self Hosted Ray Cluster
         import torch
 
         ray_config_path = (
