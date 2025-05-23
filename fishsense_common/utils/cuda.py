@@ -2,14 +2,16 @@ import os
 from typing import List
 
 
-def get_most_free_gpu() -> int | None:
-    try:
-        import cupy
-    except ImportError:
-        # cupy is not installed, return None
-        return None
+def is_available() -> bool:
+    import torch
 
-    if cupy.cuda.is_available():
+    return torch.cuda.is_available()
+
+
+def get_most_free_gpu() -> int | None:
+    if is_available():
+        import cupy
+
         free_memory: List[int] = []
 
         for i in range(cupy.cuda.runtime.getDeviceCount()):
@@ -24,15 +26,7 @@ def get_most_free_gpu() -> int | None:
 
 
 def get_pytorch_device() -> str:
-    try:
-        import cupy
-    except ImportError:
-        # cupy is not installed, return CPU
-        return "cpu"
-
-    import torch
-
-    if torch.cuda.is_available():
+    if is_available():
         return f"cuda:{get_most_free_gpu()}"
     else:
         return "cpu"

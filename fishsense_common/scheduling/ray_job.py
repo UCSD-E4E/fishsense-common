@@ -17,6 +17,7 @@ from fishsense_common import __version__
 from fishsense_common.scheduling.arguments import argument
 from fishsense_common.scheduling.job import Job
 from fishsense_common.scheduling.job_definition import JobDefinition
+from fishsense_common.utils.cuda import is_available as cuda_is_available
 
 
 class RayJob(Job, ABC):
@@ -62,6 +63,9 @@ class RayJob(Job, ABC):
         vram_mb: int = None,
     ):
         super().__init__(job_definition, input_filesystem, output_filesystem)
+
+        if not cuda_is_available():
+            vram_mb = None
 
         num_gpus = None
         if vram_mb is not None:
