@@ -25,8 +25,8 @@ dev = [
     "pylint>=3.3.7",
 ]
 
-[tool.setuptools]
-packages = ["fishsense_common"]
+#[tool.setuptools]
+#packages = ["fishsense_common"]
 
 [tool.semantic_release]
 version_variables = ["fishsense_common/__init__.py:__version__"]
