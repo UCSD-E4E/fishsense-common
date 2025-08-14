@@ -2,6 +2,14 @@
 
 <!-- version list -->
 
+## v1.0.2 (2025-08-14)
+
+### Bug Fixes
+
+- Missing inits
+  ([`8e0d7df`](https://github.com/UCSD-E4E/fishsense-common/commit/8e0d7df3dd41e0fcbfa6e2dbcd071b65cbe012a8))
+
+
 ## v1.0.1 (2025-06-16)
 
 ### Bug Fixes
